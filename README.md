@@ -1,36 +1,105 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TechDocs AI
 
-## Getting Started
+> 기술 문서를 업로드하면 AI가 출처와 함께 답변하는 RAG 기반 챗봇
 
-First, run the development server:
+<!-- 데모 GIF -->
+<!-- ![demo](https://your-demo-gif-url) -->
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+<!-- 배포 URL -->
+<!-- 🔗 [라이브 데모](https://your-vercel-url.vercel.app) -->
+
+---
+
+## 주요 기능
+
+- **문서 업로드** — PDF, MD, TXT Drag & Drop, 자동 벡터 인덱싱
+- **AI 채팅** — SSE 스트리밍 답변, 마크다운 + 코드 블록 렌더링
+- **출처 표시** — 답변마다 출처 뱃지, 클릭 시 원문 하이라이트 사이드패널
+- **GitHub 연동** — 레포 URL 입력 → README·코드 주석 자동 인덱싱
+- **Slack 연동** — `@techdocs` 멘션으로 채널에서 바로 질문
+
+---
+
+## 기술 스택
+
+### 프론트엔드
+- Next.js 14 (App Router) · TypeScript · Tailwind CSS
+- react-dropzone · react-markdown · axios
+
+### 백엔드
+- FastAPI · LangChain · ChromaDB · OpenAI API
+
+### 배포
+- Vercel (프론트) · Railway (백엔드)
+
+---
+
+## 아키텍처
+
+```
+[브라우저 / Slack]
+       │
+       ▼
+[Next.js 14 — App Router]
+       │  SSE 스트리밍
+       ▼
+[FastAPI]
+  ├── /upload  → 청킹 → 임베딩 → ChromaDB
+  ├── /chat    → 벡터 검색 → OpenAI 스트리밍
+  └── /github  → GitHub API 크롤링 → 인덱싱
+       │
+       ▼
+[ChromaDB]  ←→  [OpenAI API]
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 로컬 실행
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 사전 요구사항
+- Node.js 18+
+- Python 3.11+
+- OpenAI API Key
 
-## Learn More
+### 프론트엔드
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm install
+cp .env.example .env.local  # NEXT_PUBLIC_API_URL 설정
+npm run dev
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 백엔드
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+cd backend
+python -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env  # OPENAI_API_KEY 설정
+uvicorn main:app --reload
+```
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 기술 선택 이유
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| 선택 | 이유 |
+|------|------|
+| Next.js App Router | 서버 컴포넌트로 초기 로딩 최적화, SSE 처리 용이 |
+| FastAPI | Python 생태계(LangChain, OpenAI SDK) 활용, 비동기 스트리밍 지원 |
+| ChromaDB | 로컬 실행 가능, 설정 없이 빠른 프로토타이핑 |
+| SSE (not WebSocket) | 단방향 스트리밍에 충분, 서버 구현 단순 |
+
+---
+
+## 트러블슈팅
+
+<!-- 개발 중 마주친 이슈와 해결 과정을 여기에 추가 -->
+
+---
+
+## 문서
+
+- [PRD](docs/PRD.md) — 문제 정의, 기능 요구사항
+- [PLAN](docs/PLAN.md) — 개발 계획 및 아키텍처
+- [Contributing](docs/CONTRIBUTING.md) — 커밋·브랜치 컨벤션
