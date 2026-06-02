@@ -42,6 +42,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# vscode
+.vscode/
+
 # claude code
 CLAUDE.md
 AGENTS.md
