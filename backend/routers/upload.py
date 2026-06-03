@@ -8,11 +8,12 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from sentence_transformers import SentenceTransformer
 
 from db.chroma import get_collection
+from db.store import docs_store, status_events
 
 router = APIRouter()
 
 ALLOWED_EXTENSIONS = {".pdf", ".md", ".txt"}
-MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
+MAX_FILE_SIZE = 10 * 1024 * 1024
 CHUNK_SIZE = 500
 CHUNK_OVERLAP = 50
 
@@ -21,9 +22,6 @@ text_splitter = RecursiveCharacterTextSplitter(
     chunk_size=CHUNK_SIZE,
     chunk_overlap=CHUNK_OVERLAP,
 )
-
-# SSE 이벤트 브로드캐스트용 큐
-status_events: list[dict] = []
 
 
 def make_doc_id(filename: str) -> str:
@@ -39,6 +37,7 @@ def extract_text(filename: str, content: bytes) -> str:
 
 def process_document(doc_id: str, filename: str, content: bytes) -> None:
     try:
+        size = len(content)
         text = extract_text(filename, content)
         chunks = text_splitter.split_text(text)
         embeddings = embedding_model.encode(chunks).tolist()
@@ -49,11 +48,15 @@ def process_document(doc_id: str, filename: str, content: bytes) -> None:
             ids=[f"{doc_id}_{i}" for i in range(len(chunks))],
             embeddings=embeddings,
             documents=chunks,
-            metadatas=[{"doc_id": doc_id, "filename": filename} for _ in chunks],
+            metadatas=[{"doc_id": doc_id, "filename": filename, "size": size} for _ in chunks],
         )
 
+        docs_store[doc_id]["status"] = "ready"
         status_events.append({"id": doc_id, "status": "ready"})
     except Exception as e:
+        if doc_id in docs_store:
+            docs_store[doc_id]["status"] = "error"
+            docs_store[doc_id]["errorMessage"] = str(e)
         status_events.append({"id": doc_id, "status": "error", "errorMessage": str(e)})
 
 
@@ -75,12 +78,15 @@ async def upload_document(file: UploadFile, background_tasks: BackgroundTasks):
 
     doc_id = make_doc_id(filename)
 
-    background_tasks.add_task(process_document, doc_id, filename, content)
-
-    return {
+    doc = {
         "id": doc_id,
         "name": filename,
         "size": len(content),
         "status": "indexing",
         "uploadedAt": datetime.utcnow().isoformat(),
     }
+    docs_store[doc_id] = doc
+
+    background_tasks.add_task(process_document, doc_id, filename, content)
+
+    return doc
