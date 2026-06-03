@@ -48,9 +48,9 @@
 - [x] LangChain + ChromaDB 설치 및 연결
 - [x] PDF 업로드 → 청킹 → 벡터 저장 파이프라인
 - [x] `/upload`, `/docs` 엔드포인트 구현
-- [ ] `/docs/status` (SSE) 엔드포인트 구현
-- [ ] `/docs/:id` (DELETE) 엔드포인트 구현
-- [ ] `/chat` (스트리밍) 엔드포인트 구현
+- [x] `/docs/status` (SSE) 엔드포인트 구현
+- [x] `/docs/:id` (DELETE) 엔드포인트 구현
+- [x] `/chat` (스트리밍) 엔드포인트 구현
 
 ### Day 3 (수) — 파일 업로드 UI 완성 `4h`
 
