@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from db.chroma import get_collection
 from db.store import docs_store
-from routers import docs, upload
+from routers import chat, docs, upload
 
 load_dotenv()
 
@@ -40,6 +40,7 @@ app.add_middleware(
 
 app.include_router(upload.router)
 app.include_router(docs.router)
+app.include_router(chat.router)
 
 
 @app.get("/health")
