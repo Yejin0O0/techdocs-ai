@@ -14,20 +14,22 @@ export function useDocuments() {
       .then((docs) => setDocuments(docs))
       .catch((e: Error) => setFetchError(e.message));
 
-    const unsubscribe = subscribeDocumentStatus(({ id, status, errorMessage }) => {
-      setDocuments((prev) =>
-        prev.map((d) =>
-          d.id === id
-            ? {
-                ...d,
-                status: status as UploadedDocument['status'],
-                errorMessage,
-                progress: undefined,
-              }
-            : d
-        )
-      );
-    });
+    const unsubscribe = subscribeDocumentStatus(
+      ({ id, status, errorMessage }) => {
+        setDocuments((prev) =>
+          prev.map((d) => {
+            if (d.id !== id) return d;
+            return {
+              ...d,
+              status: status as UploadedDocument['status'],
+              errorMessage,
+              progress: undefined,
+            };
+          })
+        );
+      },
+      (message) => setFetchError(message)
+    );
 
     return unsubscribe;
   }, []);
@@ -55,7 +57,13 @@ export function useDocuments() {
         });
 
         setDocuments((prev) =>
-          prev.map((d) => (d.id === tempId ? { ...doc, status: 'indexing', file } : d))
+          prev
+            .filter((d) => d.id !== doc.id || d.id === tempId)
+            .map((d) =>
+              d.id === tempId
+                ? { ...doc, status: 'indexing', file, indexingStartedAt: new Date() }
+                : d
+            )
         );
       } catch (e) {
         setDocuments((prev) =>

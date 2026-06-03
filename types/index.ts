@@ -6,6 +6,7 @@ export interface UploadedDocument {
   size: number;
   status: UploadStatus;
   uploadedAt: Date;
+  indexingStartedAt?: Date;
   errorMessage?: string;
   uploadedBy?: string;
   file?: File;
