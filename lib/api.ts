@@ -11,10 +11,14 @@ function extractErrorMessage(e: unknown, fallback: string): never {
   throw e;
 }
 
+function parseDocument(doc: UploadedDocument & { uploadedAt: string }): UploadedDocument {
+  return { ...doc, uploadedAt: new Date(doc.uploadedAt) };
+}
+
 export async function fetchDocuments(): Promise<UploadedDocument[]> {
   try {
     const { data } = await axios.get(`${BASE_URL}/documents`);
-    return Array.isArray(data) ? data : [];
+    return Array.isArray(data) ? data.map(parseDocument) : [];
   } catch (e) {
     extractErrorMessage(e, '문서 목록을 불러오지 못했어요.');
   }
@@ -37,7 +41,7 @@ export async function uploadDocument(
       },
     });
 
-    return data;
+    return parseDocument(data);
   } catch (e) {
     extractErrorMessage(e, '파일 업로드 중 오류가 발생했어요.');
   }
