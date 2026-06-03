@@ -9,4 +9,5 @@ export interface UploadedDocument {
   errorMessage?: string;
   uploadedBy?: string;
   file?: File;
+  progress?: number;
 }
