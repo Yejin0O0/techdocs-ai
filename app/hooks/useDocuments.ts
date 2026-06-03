@@ -7,9 +7,12 @@ import { UploadedDocument } from '@/types';
 
 export function useDocuments() {
   const [documents, setDocuments] = useState<UploadedDocument[]>([]);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchDocuments().then((docs) => setDocuments(docs));
+    fetchDocuments()
+      .then((docs) => setDocuments(docs))
+      .catch((e: Error) => setFetchError(e.message));
 
     const unsubscribe = subscribeDocumentStatus(({ id, status, errorMessage }) => {
       setDocuments((prev) =>
@@ -107,5 +110,10 @@ export function useDocuments() {
     }
   }, []);
 
-  return { documents, handleUpload, handleRetry, handleDelete };
+  const checkDuplicates = useCallback(
+    (files: File[]) => files.filter((f) => documents.some((d) => d.name === f.name)),
+    [documents]
+  );
+
+  return { documents, fetchError, handleUpload, handleRetry, handleDelete, checkDuplicates };
 }
