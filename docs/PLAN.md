@@ -18,13 +18,15 @@
         │
         ▼
 [FastAPI 백엔드]
-  ├── /upload  — 청킹 → 임베딩 → ChromaDB 저장
-  ├── /chat    — 벡터 검색 → OpenAI 스트리밍
-  ├── /docs    — 문서 목록 관리
-  └── /github  — GitHub API 크롤링 → 인덱싱
+  ├── /upload        — 청킹 → 임베딩 → ChromaDB 저장
+  ├── /chat          — 벡터 검색 → Groq 스트리밍
+  ├── /docs          — 문서 목록 관리
+  ├── /docs/status   — 인덱싱 상태 SSE 스트리밍
+  ├── /docs/:id      — 문서 삭제
+  └── /github        — GitHub API 크롤링 → 인덱싱
         │
         ▼
-[ChromaDB]  ←→  [OpenAI API]
+[ChromaDB]  ←→  [Groq API]
 ```
 
 ---
@@ -42,17 +44,21 @@
 
 ### Day 2 (화) — RAG 백엔드 최소 구현 `3h`
 
-- [ ] FastAPI 기본 서버 세팅
-- [ ] LangChain + ChromaDB 설치 및 연결
-- [ ] PDF 업로드 → 청킹 → 벡터 저장 파이프라인
-- [ ] `/upload`, `/chat` (스트리밍), `/docs` 엔드포인트 구현
+- [x] FastAPI 기본 서버 세팅
+- [x] LangChain + ChromaDB 설치 및 연결
+- [x] PDF 업로드 → 청킹 → 벡터 저장 파이프라인
+- [x] `/upload`, `/docs` 엔드포인트 구현
+- [ ] `/docs/status` (SSE) 엔드포인트 구현
+- [ ] `/docs/:id` (DELETE) 엔드포인트 구현
+- [ ] `/chat` (스트리밍) 엔드포인트 구현
 
 ### Day 3 (수) — 파일 업로드 UI 완성 `4h`
 
 - [ ] 업로드 진행률 바
 - [ ] 파일 목록 UI — 상태 뱃지: 인덱싱 중 / 준비 완료 / 오류
 - [ ] 파일 삭제 기능
-- [ ] 백엔드 `/upload` API 연결
+- [ ] 중복 파일명 업로드 시 경고 UI
+- [ ] 백엔드 `/upload`, `/docs`, `/docs/status` SSE, `/docs/:id` DELETE 연결
 
 ### Day 4 (목) — 채팅 UI + 스트리밍 `4h`
 
