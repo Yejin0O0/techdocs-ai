@@ -23,13 +23,16 @@
 ## 기술 스택
 
 ### 프론트엔드
+
 - Next.js 14 (App Router) · TypeScript · Tailwind CSS
 - react-dropzone · react-markdown · axios
 
 ### 백엔드
-- FastAPI · LangChain · ChromaDB · OpenAI API
+
+- FastAPI · LangChain · ChromaDB · sentence-transformers · Groq API
 
 ### 배포
+
 - Vercel (프론트) · Railway (백엔드)
 
 ---
@@ -45,11 +48,11 @@
        ▼
 [FastAPI]
   ├── /upload  → 청킹 → 임베딩 → ChromaDB
-  ├── /chat    → 벡터 검색 → OpenAI 스트리밍
+  ├── /chat    → 벡터 검색 → Groq 스트리밍
   └── /github  → GitHub API 크롤링 → 인덱싱
        │
        ▼
-[ChromaDB]  ←→  [OpenAI API]
+[ChromaDB]  ←→  [Groq API]
 ```
 
 ---
@@ -57,15 +60,16 @@
 ## 로컬 실행
 
 ### 사전 요구사항
+
 - Node.js 18+
 - Python 3.11+
-- OpenAI API Key
+- Groq API Key ([무료 발급](https://console.groq.com))
 
 ### 프론트엔드
 
 ```bash
 npm install
-cp .env.example .env.local  # NEXT_PUBLIC_API_URL 설정
+cp .env.example .env.local  # NEXT_PUBLIC_API_URL 확인 (기본값: http://localhost:8000)
 npm run dev
 ```
 
@@ -75,7 +79,7 @@ npm run dev
 cd backend
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-cp .env.example .env  # OPENAI_API_KEY 설정
+cp .env.example .env  # GROQ_API_KEY 입력
 uvicorn main:app --reload
 ```
 
@@ -83,12 +87,12 @@ uvicorn main:app --reload
 
 ## 기술 선택 이유
 
-| 선택 | 이유 |
-|------|------|
-| Next.js App Router | 서버 컴포넌트로 초기 로딩 최적화, SSE 처리 용이 |
-| FastAPI | Python 생태계(LangChain, OpenAI SDK) 활용, 비동기 스트리밍 지원 |
-| ChromaDB | 로컬 실행 가능, 설정 없이 빠른 프로토타이핑 |
-| SSE (not WebSocket) | 단방향 스트리밍에 충분, 서버 구현 단순 |
+| 선택                | 이유                                                                                 |
+| ------------------- | ------------------------------------------------------------------------------------ |
+| Next.js App Router  | 서버 컴포넌트로 초기 로딩 최적화, SSE 처리 용이                                      |
+| FastAPI             | Python 생태계(LangChain, sentence-transformers, ChromaDB) 활용, 비동기 스트리밍 지원 |
+| ChromaDB            | 로컬 실행 가능, 설정 없이 빠른 프로토타이핑                                          |
+| SSE (not WebSocket) | 단방향 스트리밍에 충분, 서버 구현 단순                                               |
 
 ---
 
