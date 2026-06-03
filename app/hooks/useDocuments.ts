@@ -94,7 +94,11 @@ export function useDocuments() {
         });
 
         setDocuments((prev) =>
-          prev.map((d) => (d.id === id ? { ...d, status: 'indexing', progress: undefined } : d))
+          prev.map((d) =>
+            d.id === id
+              ? { ...d, status: 'indexing', progress: undefined, indexingStartedAt: new Date() }
+              : d
+          )
         );
       } catch (e) {
         setDocuments((prev) =>
