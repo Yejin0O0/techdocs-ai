@@ -4,6 +4,16 @@ import { useCallback, useRef, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { UploadCloud } from 'lucide-react';
 
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+
 const ACCEPTED_TYPES = {
   'application/pdf': ['.pdf'],
   'text/markdown': ['.md'],
@@ -14,11 +24,14 @@ const MAX_SIZE = 10 * 1024 * 1024;
 
 interface FileUploaderProps {
   onUpload: (files: File[]) => void;
+  checkDuplicates: (files: File[]) => File[];
 }
 
-export default function FileUploader({ onUpload }: FileUploaderProps) {
+export default function FileUploader({ onUpload, checkDuplicates }: FileUploaderProps) {
   const [emptyFileError, setEmptyFileError] = useState('');
   const errorTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [pendingFiles, setPendingFiles] = useState<File[]>([]);
+  const [duplicateNames, setDuplicateNames] = useState<string[]>([]);
 
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
@@ -33,12 +46,30 @@ export default function FileUploader({ onUpload }: FileUploaderProps) {
         errorTimerRef.current = setTimeout(() => setEmptyFileError(''), 4000);
       }
 
-      if (validFiles.length > 0) {
-        onUpload(validFiles);
+      if (validFiles.length === 0) return;
+
+      const duplicates = checkDuplicates(validFiles);
+      if (duplicates.length > 0) {
+        setPendingFiles(validFiles);
+        setDuplicateNames(duplicates.map((f) => f.name));
+        return;
       }
+
+      onUpload(validFiles);
     },
-    [onUpload]
+    [onUpload, checkDuplicates]
   );
+
+  const handleConfirmOverwrite = () => {
+    onUpload(pendingFiles);
+    setPendingFiles([]);
+    setDuplicateNames([]);
+  };
+
+  const handleCancelOverwrite = () => {
+    setPendingFiles([]);
+    setDuplicateNames([]);
+  };
 
   const { getRootProps, getInputProps, isDragActive, fileRejections } = useDropzone({
     onDrop,
@@ -71,6 +102,30 @@ export default function FileUploader({ onUpload }: FileUploaderProps) {
         </p>
       )}
       {emptyFileError && <p className="text-sm text-red-500">{emptyFileError}</p>}
+
+      <Dialog open={duplicateNames.length > 0} onOpenChange={handleCancelOverwrite}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>이미 같은 이름의 문서가 있어요</DialogTitle>
+            <DialogDescription>
+              다음 파일이 기존 문서를 덮어씁니다.
+              <ul className="mt-2 list-disc pl-4">
+                {duplicateNames.map((name) => (
+                  <li key={name} className="text-sm">
+                    {name}
+                  </li>
+                ))}
+              </ul>
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={handleCancelOverwrite}>
+              취소
+            </Button>
+            <Button onClick={handleConfirmOverwrite}>덮어쓰기</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
