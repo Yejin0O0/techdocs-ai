@@ -53,6 +53,7 @@ AGENTS.md
 # python
 backend/.venv/
 TODO.md
+notes/
 backend/__pycache__/
 backend/**/__pycache__/
 *.pyc
