@@ -54,6 +54,7 @@ AGENTS.md
 backend/.venv/
 TODO.md
 notes/
+lib/mockData.ts
 backend/__pycache__/
 backend/**/__pycache__/
 *.pyc

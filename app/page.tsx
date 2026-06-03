@@ -5,7 +5,7 @@ import FileList from '@/app/components/upload/FileList';
 import { useDocuments } from '@/app/hooks/useDocuments';
 
 export default function Home() {
-  const { documents, handleUpload, handleRetry } = useDocuments();
+  const { documents, handleUpload, handleRetry, handleDelete } = useDocuments();
 
   return (
     <div className="flex h-screen bg-white dark:bg-zinc-950">
@@ -13,7 +13,7 @@ export default function Home() {
         <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">문서</h2>
         <FileUploader onUpload={handleUpload} />
         <div className="flex-1 overflow-y-auto">
-          <FileList documents={documents} onRetry={handleRetry} />
+          <FileList documents={documents} onRetry={handleRetry} onDelete={handleDelete} />
         </div>
       </aside>
       <main className="flex flex-1 items-center justify-center">
