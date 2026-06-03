@@ -43,7 +43,7 @@ SSE로 상태 변경 (indexing → ready) 전송
 - **PDF 추출**: `pdfplumber` — 텍스트 기반 PDF 처리, OCR 미지원
 - **중복 문서**: 파일명 기반 ID로 기존 문서 덮어쓰기 (기존 청크 삭제 후 재저장)
 - **문서 ID**: 파일명 기반 생성 — 같은 파일명 업로드 시 자동으로 기존 문서 덮어쓰기, 구현 단순
-- **상태 전달**: SSE 단일 스트림 (`GET /docs/status`) — 모든 문서 상태 변경을 하나의 연결로 수신, N개 연결 방지
+- **상태 전달**: SSE 단일 스트림 (`GET /documents/status`) — 모든 문서 상태 변경을 하나의 연결로 수신, N개 연결 방지
 
 ---
 
@@ -55,17 +55,17 @@ SSE로 상태 변경 (indexing → ready) 전송
 - **Response**: `{ id: string, name: string, size: number, status: "indexing" }`
 - 처리는 백그라운드, 응답은 즉시 반환
 
-### `GET /docs`
+### `GET /documents`
 
 - **Response**: `[{ id, name, size, status }]`
 - 현재 저장된 문서 목록 반환
 
-### `GET /docs/status` (SSE)
+### `GET /documents/status` (SSE)
 
 - 단일 스트림으로 모든 문서 상태 변경 이벤트 전송
 - `{ id: string, status: "ready" | "error", errorMessage?: string }`
 
-### `DELETE /docs/:id`
+### `DELETE /documents/:id`
 
 - ChromaDB에서 해당 문서의 모든 청크 삭제
 - **Response**: `{ id: string, status: "deleted" }`

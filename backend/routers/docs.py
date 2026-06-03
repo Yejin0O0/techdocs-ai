@@ -10,12 +10,12 @@ from db.store import docs_store, status_events
 router = APIRouter()
 
 
-@router.get("/docs")
+@router.get("/documents")
 def get_docs():
     return list(docs_store.values())
 
 
-@router.get("/docs/status")
+@router.get("/documents/status")
 async def docs_status():
     async def event_generator():
         while True:
@@ -32,7 +32,7 @@ async def docs_status():
     return EventSourceResponse(event_generator())
 
 
-@router.delete("/docs/{doc_id}")
+@router.delete("/documents/{doc_id}")
 def delete_doc(doc_id: str):
     if doc_id not in docs_store:
         raise HTTPException(status_code=404, detail="문서를 찾을 수 없어요.")
