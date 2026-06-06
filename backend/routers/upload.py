@@ -14,10 +14,10 @@ router = APIRouter()
 
 ALLOWED_EXTENSIONS = {".pdf", ".md", ".txt"}
 MAX_FILE_SIZE = 10 * 1024 * 1024
-CHUNK_SIZE = 500
-CHUNK_OVERLAP = 50
+CHUNK_SIZE = 1000
+CHUNK_OVERLAP = 200
 
-embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
+embedding_model = SentenceTransformer("paraphrase-multilingual-MiniLM-L12-v2")
 text_splitter = RecursiveCharacterTextSplitter(
     chunk_size=CHUNK_SIZE,
     chunk_overlap=CHUNK_OVERLAP,

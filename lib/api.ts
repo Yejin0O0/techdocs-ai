@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { UploadedDocument } from '@/types';
+import { ChatMessage, UploadedDocument } from '@/types';
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000';
 
@@ -52,6 +52,64 @@ export async function deleteDocument(id: string): Promise<void> {
     await axios.delete(`${BASE_URL}/documents/${id}`);
   } catch (e) {
     extractErrorMessage(e, '문서 삭제 중 오류가 발생했어요.');
+  }
+}
+
+export async function streamChat(
+  question: string,
+  history: Pick<ChatMessage, 'role' | 'content'>[],
+  onChunk: (text: string) => void,
+  onSources: (sources: string[]) => void,
+  onError: (message: string) => void
+): Promise<void> {
+  let res: Response;
+  try {
+    res = await fetch(`${BASE_URL}/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question, history }),
+    });
+  } catch {
+    onError('서버에 연결할 수 없어요.');
+    return;
+  }
+
+  if (!res.ok || !res.body) {
+    onError('답변을 불러오지 못했어요.');
+    return;
+  }
+
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = '';
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+
+    buffer += decoder.decode(value, { stream: true }).replace(/\r\n/g, '\n');
+    const parts = buffer.split('\n\n');
+    buffer = parts.pop() ?? '';
+
+    for (const part of parts) {
+      let eventType = 'message';
+      let data = '';
+
+      for (const line of part.split('\n')) {
+        if (line.startsWith('event: ')) eventType = line.slice(7);
+        else if (line.startsWith('data: ')) data = line.slice(6);
+      }
+
+      if (eventType === 'message' && data) {
+        onChunk(data);
+      } else if (eventType === 'sources' && data) {
+        try {
+          onSources(JSON.parse(data));
+        } catch {
+          // sources 파싱 실패는 무시
+        }
+      }
+    }
   }
 }
 
