@@ -1,10 +1,16 @@
 export type UploadStatus = 'uploading' | 'indexing' | 'ready' | 'error';
 
+export interface ChatSource {
+  fileName: string;
+  page?: number;
+  chunk: string;
+}
+
 export interface ChatMessage {
   id: string;
   role: 'user' | 'assistant';
   content: string;
-  sources?: string[];
+  sources?: ChatSource[];
   isStreaming?: boolean;
 }
 

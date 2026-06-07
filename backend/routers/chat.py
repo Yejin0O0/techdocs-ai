@@ -106,7 +106,14 @@ async def chat(request: ChatRequest):
     chunks, metadatas = hybrid_search(request.question, question_vector, collection, TOP_K)
 
     context = "\n\n".join(chunks)
-    sources = list({m["filename"] for m in metadatas if m and "filename" in m})
+    sources = []
+    for chunk, m in zip(chunks[:3], metadatas[:3]):
+        if not m or "filename" not in m:
+            continue
+        source: dict = {"fileName": m["filename"], "chunk": chunk}
+        if m.get("page") is not None:
+            source["page"] = m["page"]
+        sources.append(source)
 
     messages = [
         {"role": "system", "content": SYSTEM_PROMPT},

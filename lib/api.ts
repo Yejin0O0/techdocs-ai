@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { ChatMessage, UploadedDocument } from '@/types';
+import { ChatMessage, ChatSource, UploadedDocument } from '@/types';
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000';
 
@@ -59,7 +59,7 @@ export async function streamChat(
   question: string,
   history: Pick<ChatMessage, 'role' | 'content'>[],
   onChunk: (text: string) => void,
-  onSources: (sources: string[]) => void,
+  onSources: (sources: ChatSource[]) => void,
   onError: (message: string) => void
 ): Promise<void> {
   let res: Response;
