@@ -25,18 +25,30 @@ def make_doc_id(filename: str) -> str:
     return re.sub(r"[^\w\-.]", "_", filename)
 
 
-def extract_text(filename: str, content: bytes) -> str:
+def extract_chunks_with_pages(filename: str, content: bytes) -> tuple[list[str], list[dict]]:
+    size = len(content)
     if filename.endswith(".pdf"):
+        chunks, metadatas = [], []
         with pdfplumber.open(io.BytesIO(content)) as pdf:
-            return "\n".join(page.extract_text() or "" for page in pdf.pages)
-    return content.decode("utf-8", errors="ignore")
+            for page_num, page in enumerate(pdf.pages, start=1):
+                page_text = page.extract_text() or ""
+                for chunk in text_splitter.split_text(page_text):
+                    chunks.append(chunk)
+                    metadatas.append({"doc_id": filename, "filename": filename, "size": size, "page": page_num})
+        return chunks, metadatas
+    else:
+        text = content.decode("utf-8", errors="ignore")
+        chunks = text_splitter.split_text(text)
+        metadatas = [{"doc_id": filename, "filename": filename, "size": size} for _ in chunks]
+        return chunks, metadatas
 
 
 def process_document(doc_id: str, filename: str, content: bytes) -> None:
     try:
-        size = len(content)
-        text = extract_text(filename, content)
-        chunks = text_splitter.split_text(text)
+        chunks, metadatas = extract_chunks_with_pages(filename, content)
+        # doc_id로 metadatas 수정
+        for m in metadatas:
+            m["doc_id"] = doc_id
         embeddings = embedding_model.encode(chunks).tolist()
 
         collection = get_collection()
@@ -45,7 +57,7 @@ def process_document(doc_id: str, filename: str, content: bytes) -> None:
             ids=[f"{doc_id}_{i}" for i in range(len(chunks))],
             embeddings=embeddings,
             documents=chunks,
-            metadatas=[{"doc_id": doc_id, "filename": filename, "size": size} for _ in chunks],
+            metadatas=metadatas,
         )
 
         docs_store[doc_id]["status"] = "ready"
