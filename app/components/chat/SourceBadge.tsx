@@ -9,7 +9,8 @@ interface Props {
 }
 
 export default function SourceBadge({ source, onClick }: Props) {
-  const label = source.page ? `${source.fileName} · p.${source.page}` : source.fileName;
+  const label =
+    source.page !== undefined ? `${source.fileName} · p.${source.page}` : source.fileName;
 
   return (
     <Badge

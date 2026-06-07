@@ -32,7 +32,7 @@ function highlightText(text: string, question: string): React.ReactNode[] {
   const parts = text.split(pattern);
 
   return parts.map((part, i) =>
-    pattern.test(part) ? (
+    i % 2 === 1 ? (
       <mark key={i} className="rounded bg-yellow-200 px-0.5 dark:bg-yellow-800">
         {part}
       </mark>

@@ -52,22 +52,21 @@ export default function ChatWindow() {
             </div>
           ) : (
             <div className="space-y-4">
-              {messages.map((m, index) => {
-                const precedingQuestion =
-                  m.role === 'assistant'
-                    ? (messages
-                        .slice(0, index)
-                        .reverse()
-                        .find((msg) => msg.role === 'user')?.content ?? '')
-                    : '';
-                return (
+              {(() => {
+                const questionMap = new Map<string, string>();
+                let lastQuestion = '';
+                for (const m of messages) {
+                  if (m.role === 'user') lastQuestion = m.content;
+                  else questionMap.set(m.id, lastQuestion);
+                }
+                return messages.map((m) => (
                   <MessageBubble
                     key={m.id}
                     message={m}
-                    onBadgeClick={(source) => openPanel(source, precedingQuestion)}
+                    onBadgeClick={(source) => openPanel(source, questionMap.get(m.id) ?? '')}
                   />
-                );
-              })}
+                ));
+              })()}
             </div>
           )}
           <div ref={bottomRef} />
