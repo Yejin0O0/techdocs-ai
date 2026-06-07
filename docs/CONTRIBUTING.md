@@ -7,12 +7,15 @@
 ### 형식
 
 ```
-<type>: <subject>
+<type>(SCRUM-N): <subject>
 
 [body]
 
 [footer]
 ```
+
+- `SCRUM-N`은 관련 JIRA 이슈 키 (JIRA-GitHub 연동으로 커밋이 이슈에 자동 연결됨)
+- 관련 이슈가 없는 경우 scope 생략: `docs: prd 업데이트`
 
 ---
 
@@ -60,28 +63,28 @@
 ### 예시
 
 ```
-feat: AI 응답 SSE 스트리밍 추가
+feat(SCRUM-12): 채팅 인터페이스 ChatWindow.tsx 구현
 ```
 
 ```
-fix: 파일 크기 초과 시 에러 처리
+fix(SCRUM-14): SSE 스트리밍 파싱 오류 수정
 
-10MB 초과 파일 업로드 시 앱이 조용히 크래시되는 문제 수정.
-인라인 에러 메시지와 제한 용량을 함께 표시하도록 변경.
+버퍼 경계에서 이벤트 블록이 잘리는 문제 수정.
+\n\n 기준 분리 후 미완성 블록을 버퍼에 보관하도록 변경.
 ```
 
 ```
-feat: 출처 뱃지 클릭 시 하이라이트 패널 오픈
+feat(SCRUM-16): 출처 뱃지 클릭 시 하이라이트 패널 오픈
 
 BREAKING CHANGE: SourceBadge에 onOpen prop 필수로 추가됨
 ```
 
 ```
-chore: next 14.2.0으로 업그레이드
+chore: next 업그레이드
 ```
 
 ```
-docs: 포트폴리오용 PRD, PLAN 개선
+docs: prd에 jira+mcp 워크플로우 섹션 추가
 ```
 
 ---
@@ -91,19 +94,20 @@ docs: 포트폴리오용 PRD, PLAN 개선
 ### 형식
 
 ```
-<type>/<short-description>
+<type>/SCRUM-<N>-<short-description>
 ```
 
-- `type`은 커밋 컨벤션의 type과 동일하게 사용
+- `SCRUM-N`은 관련 JIRA 이슈 키
+  - **Epic 단위 작업** (여러 태스크 포함): Epic 번호 사용 → `feature/SCRUM-1-chat-ui`
+  - **단일 태스크 작업**: 태스크 번호 사용 → `fix/SCRUM-14-sse-streaming`
 - `short-description`은 영어 소문자 + 하이픈 구분 (kebab-case)
 - 작업 단위로 브랜치 생성, 완료 후 main에 머지
 
 ### 예시
 
 ```
-feat/chat-streaming
-fix/upload-size-error
-docs/contributing-guide
-refactor/source-panel
-chore/upgrade-next
+feature/SCRUM-1-chat-ui
+fix/SCRUM-14-sse-streaming
+docs/SCRUM-36-readme
+refactor/SCRUM-20-source-panel
 ```
