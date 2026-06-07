@@ -2,13 +2,16 @@
 
 import ReactMarkdown from 'react-markdown';
 
-import { ChatMessage } from '@/types';
+import { ChatMessage, ChatSource } from '@/types';
+
+import SourceBadge from './SourceBadge';
 
 interface Props {
   message: ChatMessage;
+  onBadgeClick?: (source: ChatSource) => void;
 }
 
-export default function MessageBubble({ message }: Props) {
+export default function MessageBubble({ message, onBadgeClick }: Props) {
   const isUser = message.role === 'user';
 
   return (
@@ -32,13 +35,14 @@ export default function MessageBubble({ message }: Props) {
           <span className="ml-0.5 inline-block h-4 w-1.5 animate-pulse bg-current" />
         )}
 
-        {/* Day 5에서 SourceBadge로 교체 예정 */}
         {!message.isStreaming && message.sources && message.sources.length > 0 && (
           <div className="mt-2 flex flex-wrap gap-1 border-t border-zinc-200 pt-2 dark:border-zinc-700">
-            {message.sources.map((source) => (
-              <span key={source} className="text-xs text-zinc-500 dark:text-zinc-400">
-                📎 {source}
-              </span>
+            {message.sources.map((source, i) => (
+              <SourceBadge
+                key={`${source.fileName}-${source.page ?? i}`}
+                source={source}
+                onClick={() => onBadgeClick?.(source)}
+              />
             ))}
           </div>
         )}
