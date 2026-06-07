@@ -2,6 +2,7 @@
 
 import FileUploader from '@/app/components/upload/FileUploader';
 import FileList from '@/app/components/upload/FileList';
+import ChatWindow from '@/app/components/chat/ChatWindow';
 import { useDocuments } from '@/app/hooks/useDocuments';
 
 export default function Home() {
@@ -16,8 +17,8 @@ export default function Home() {
           <FileList documents={documents} onRetry={handleRetry} onDelete={handleDelete} />
         </div>
       </aside>
-      <main className="flex flex-1 items-center justify-center">
-        <p className="text-sm text-zinc-400">채팅 UI 준비 중</p>
+      <main className="flex flex-1 overflow-hidden">
+        <ChatWindow />
       </main>
     </div>
   );

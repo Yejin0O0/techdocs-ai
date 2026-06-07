@@ -62,10 +62,10 @@
 
 ### Day 4 (목) — 채팅 UI + 스트리밍 `4h`
 
-- [ ] 채팅 인터페이스 (`ChatWindow.tsx`)
-- [ ] 말풍선 UI — user / assistant 구분
-- [ ] SSE로 스트리밍 답변 렌더링
-- [ ] 자동 스크롤, 대화 기록 상태 관리
+- [x] 채팅 인터페이스 (`ChatWindow.tsx`)
+- [x] 말풍선 UI — user / assistant 구분
+- [x] SSE로 스트리밍 답변 렌더링
+- [x] 자동 스크롤, 대화 기록 상태 관리
 
 ### Day 5 (금) — 출처 표시 UI `3h`
 
