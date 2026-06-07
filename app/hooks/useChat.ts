@@ -33,30 +33,32 @@ export function useChat() {
       setMessages((prev) => [...prev, userMessage, assistantMessage]);
       setIsLoading(true);
 
-      await streamChat(
-        question,
-        history,
-        (chunk) => {
-          setMessages((prev) =>
-            prev.map((m) => (m.id === assistantId ? { ...m, content: m.content + chunk } : m))
-          );
-        },
-        (sources) => {
-          setMessages((prev) => prev.map((m) => (m.id === assistantId ? { ...m, sources } : m)));
-        },
-        (errorMsg) => {
-          setMessages((prev) =>
-            prev.map((m) =>
-              m.id === assistantId ? { ...m, content: errorMsg, isStreaming: false } : m
-            )
-          );
-        }
-      );
-
-      setMessages((prev) =>
-        prev.map((m) => (m.id === assistantId ? { ...m, isStreaming: false } : m))
-      );
-      setIsLoading(false);
+      try {
+        await streamChat(
+          question,
+          history,
+          (chunk) => {
+            setMessages((prev) =>
+              prev.map((m) => (m.id === assistantId ? { ...m, content: m.content + chunk } : m))
+            );
+          },
+          (sources) => {
+            setMessages((prev) => prev.map((m) => (m.id === assistantId ? { ...m, sources } : m)));
+          },
+          (errorMsg) => {
+            setMessages((prev) =>
+              prev.map((m) =>
+                m.id === assistantId ? { ...m, content: errorMsg, isStreaming: false } : m
+              )
+            );
+          }
+        );
+      } finally {
+        setMessages((prev) =>
+          prev.map((m) => (m.id === assistantId ? { ...m, isStreaming: false } : m))
+        );
+        setIsLoading(false);
+      }
     },
     [messages, isLoading]
   );

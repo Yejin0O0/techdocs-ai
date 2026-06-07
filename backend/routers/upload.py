@@ -5,9 +5,8 @@ from datetime import datetime
 import pdfplumber
 from fastapi import APIRouter, BackgroundTasks, HTTPException, UploadFile
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from sentence_transformers import SentenceTransformer
-
 from db.chroma import get_collection
+from db.embeddings import embedding_model
 from db.store import docs_store, status_events
 
 router = APIRouter()
@@ -16,8 +15,6 @@ ALLOWED_EXTENSIONS = {".pdf", ".md", ".txt"}
 MAX_FILE_SIZE = 10 * 1024 * 1024
 CHUNK_SIZE = 1000
 CHUNK_OVERLAP = 200
-
-embedding_model = SentenceTransformer("paraphrase-multilingual-MiniLM-L12-v2")
 text_splitter = RecursiveCharacterTextSplitter(
     chunk_size=CHUNK_SIZE,
     chunk_overlap=CHUNK_OVERLAP,

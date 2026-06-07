@@ -6,14 +6,12 @@ from fastapi import APIRouter
 from groq import Groq
 from pydantic import BaseModel
 from rank_bm25 import BM25Okapi
-from sentence_transformers import SentenceTransformer
 from sse_starlette.sse import EventSourceResponse
 
 from db.chroma import get_collection
+from db.embeddings import embedding_model
 
 router = APIRouter()
-
-embedding_model = SentenceTransformer("paraphrase-multilingual-MiniLM-L12-v2")
 
 
 def get_groq_client() -> Groq:
@@ -50,19 +48,29 @@ class ChatRequest(BaseModel):
     history: list[HistoryMessage] = []
 
 
-def hybrid_search(question: str, question_vector: list, collection, top_k: int):
-    all_data = collection.get(include=["documents", "metadatas"])
-    all_chunks = all_data["documents"]
-    all_metadatas = all_data["metadatas"]
+_bm25_cache: dict = {"chunks": None, "metadatas": None, "index": None}
 
-    if not all_chunks:
+
+def _get_bm25_index(collection):
+    all_data = collection.get(include=["documents", "metadatas"])
+    chunks = all_data["documents"]
+    metadatas = all_data["metadatas"]
+    if chunks != _bm25_cache["chunks"]:
+        _bm25_cache["chunks"] = chunks
+        _bm25_cache["metadatas"] = metadatas
+        _bm25_cache["index"] = BM25Okapi([c.split() for c in chunks]) if chunks else None
+    return chunks, metadatas, _bm25_cache["index"]
+
+
+def hybrid_search(question: str, question_vector: list, collection, top_k: int):
+    all_chunks, all_metadatas, bm25 = _get_bm25_index(collection)
+
+    if not all_chunks or bm25 is None:
         return [], []
 
     actual_k = min(top_k, len(all_chunks))
 
-    # BM25 키워드 검색
-    tokenized = [doc.split() for doc in all_chunks]
-    bm25 = BM25Okapi(tokenized)
+    # BM25 키워드 검색 (캐시된 인덱스 사용)
     bm25_scores = np.array(bm25.get_scores(question.split()), dtype=float)
 
     # 시맨틱 검색
@@ -120,7 +128,7 @@ async def chat(request: ChatRequest):
         in_think = False
 
         for chunk in stream:
-            content = chunk.choices[0].delta.content
+            content = chunk.choices[0].delta.content if chunk.choices else None
             if not content:
                 continue
 
