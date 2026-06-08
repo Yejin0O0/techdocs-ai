@@ -104,6 +104,8 @@ export default function SourcePanel({ source, question, isOpen, onClose }: Props
   }, []);
 
   useEffect(() => {
+    if (isMobile) return;
+
     const onMouseMove = (e: MouseEvent) => {
       if (!isDragging.current) return;
       const newWidth = window.innerWidth - e.clientX;
@@ -124,7 +126,7 @@ export default function SourcePanel({ source, question, isOpen, onClose }: Props
       document.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mouseup', onMouseUp);
     };
-  }, []);
+  }, [isMobile]);
 
   if (isMobile) {
     return (
@@ -174,10 +176,34 @@ export default function SourcePanel({ source, question, isOpen, onClose }: Props
           onMouseDown={onMouseDown}
           className="absolute top-0 left-0 h-full w-1 cursor-col-resize hover:bg-zinc-300 dark:hover:bg-zinc-600"
         />
-        <SheetHeader className="border-b border-zinc-200 px-5 py-4 dark:border-zinc-800">
+        <SheetHeader className="shrink-0 border-b border-zinc-200 px-5 py-4 dark:border-zinc-800">
           <SheetTitle className="sr-only">{source.fileName}</SheetTitle>
-          <PanelContent source={source} question={question} />
+          <div className="flex items-start gap-3">
+            <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-zinc-100 dark:bg-zinc-800">
+              <FileText className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                {source.fileName}
+              </p>
+              {source.page !== undefined && (
+                <Badge variant="secondary" className="mt-1 text-xs">
+                  p.{source.page}
+                </Badge>
+              )}
+            </div>
+          </div>
         </SheetHeader>
+        <div className="flex-1 overflow-y-auto px-5 py-4">
+          <p className="mb-2 text-xs font-medium tracking-wide text-zinc-400 uppercase dark:text-zinc-500">
+            원문
+          </p>
+          <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-800 dark:bg-zinc-900">
+            <p className="whitespace-pre-wrap text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">
+              {highlightText(source.chunk, question)}
+            </p>
+          </div>
+        </div>
       </SheetContent>
     </Sheet>
   );

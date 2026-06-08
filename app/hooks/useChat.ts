@@ -11,7 +11,7 @@ export function useChat() {
   const [lastQuestion, setLastQuestion] = useState<string | null>(null);
 
   const sendMessage = useCallback(
-    async (question: string) => {
+    async (question: string, historyOverride?: ChatMessage[]) => {
       if (isLoading) return;
 
       const userMessage: ChatMessage = {
@@ -28,7 +28,7 @@ export function useChat() {
         isStreaming: true,
       };
 
-      const history = messages.map(({ role, content }) => ({ role, content }));
+      const history = (historyOverride ?? messages).map(({ role, content }) => ({ role, content }));
 
       setLastQuestion(question);
       setMessages((prev) => [...prev, userMessage, assistantMessage]);
@@ -68,9 +68,10 @@ export function useChat() {
 
   const retryLastMessage = useCallback(() => {
     if (!lastQuestion || isLoading) return;
-    setMessages((prev) => prev.slice(0, -2));
-    sendMessage(lastQuestion);
-  }, [lastQuestion, isLoading, sendMessage]);
+    const trimmed = messages.slice(0, -2);
+    setMessages(trimmed);
+    sendMessage(lastQuestion, trimmed);
+  }, [lastQuestion, isLoading, messages, sendMessage]);
 
   return { messages, isLoading, sendMessage, retryLastMessage };
 }
