@@ -138,7 +138,16 @@ function FileItem({
 }
 
 export default function FileList({ documents, onRetry, onDelete }: FileListProps) {
-  if (documents.length === 0) return null;
+  if (documents.length === 0) {
+    return (
+      <div className="flex flex-col items-center gap-2 py-8 text-center">
+        <p className="text-sm text-zinc-400 dark:text-zinc-500">업로드된 문서가 없어요</p>
+        <p className="text-xs text-zinc-300 dark:text-zinc-600">
+          .pdf, .md, .txt 파일을 업로드해보세요
+        </p>
+      </div>
+    );
+  }
 
   return (
     <ul className="flex flex-col gap-2">

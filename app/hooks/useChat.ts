@@ -8,9 +8,10 @@ import { ChatMessage } from '@/types';
 export function useChat() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [lastQuestion, setLastQuestion] = useState<string | null>(null);
 
   const sendMessage = useCallback(
-    async (question: string) => {
+    async (question: string, historyOverride?: ChatMessage[]) => {
       if (isLoading) return;
 
       const userMessage: ChatMessage = {
@@ -27,9 +28,9 @@ export function useChat() {
         isStreaming: true,
       };
 
-      // sendMessage 호출 시점의 messages를 history로 사용 (새 메시지 추가 전)
-      const history = messages.map(({ role, content }) => ({ role, content }));
+      const history = (historyOverride ?? messages).map(({ role, content }) => ({ role, content }));
 
+      setLastQuestion(question);
       setMessages((prev) => [...prev, userMessage, assistantMessage]);
       setIsLoading(true);
 
@@ -48,7 +49,9 @@ export function useChat() {
           (errorMsg) => {
             setMessages((prev) =>
               prev.map((m) =>
-                m.id === assistantId ? { ...m, content: errorMsg, isStreaming: false } : m
+                m.id === assistantId
+                  ? { ...m, content: errorMsg, isStreaming: false, isError: true }
+                  : m
               )
             );
           }
@@ -63,5 +66,12 @@ export function useChat() {
     [messages, isLoading]
   );
 
-  return { messages, isLoading, sendMessage };
+  const retryLastMessage = useCallback(() => {
+    if (!lastQuestion || isLoading) return;
+    const trimmed = messages.slice(0, -2);
+    setMessages(trimmed);
+    sendMessage(lastQuestion, trimmed);
+  }, [lastQuestion, isLoading, messages, sendMessage]);
+
+  return { messages, isLoading, sendMessage, retryLastMessage };
 }

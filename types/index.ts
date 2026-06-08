@@ -12,6 +12,7 @@ export interface ChatMessage {
   content: string;
   sources?: ChatSource[];
   isStreaming?: boolean;
+  isError?: boolean;
 }
 
 export interface UploadedDocument {
