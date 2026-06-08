@@ -20,10 +20,10 @@ export default function SourceBadge({ source, onClick }: Props) {
         e.stopPropagation();
         onClick();
       }}
-      className="cursor-pointer gap-1 hover:bg-muted"
+      className="max-w-[200px] cursor-pointer gap-1 hover:bg-muted"
     >
       <span>📎</span>
-      <span>{label}</span>
+      <span className="truncate">{label}</span>
     </Badge>
   );
 }
