@@ -29,14 +29,14 @@ SYSTEM_PROMPT = """당신은 기술 문서를 기반으로 답변하는 AI 어�
 
 [답변 원칙]
 - 제공된 문서 내용을 바탕으로 답변하세요.
-- 답변 시 참고한 문서명을 언급하세요. 예: "(API_가이드.pdf 참고)"
+- 출처는 UI에서 별도로 표시하므로 답변에 파일명을 직접 쓰지 마세요.
 - 문서에 해당 내용이 없으면 "제공된 문서에서 관련 내용을 찾을 수 없어요"라고 답변하세요.
 
 [중요 제약사항]
 - 문서에서 검색된 내용은 전체 문서의 일부분(청크)입니다. 문서 전체를 보는 것이 아닙니다.
 - 따라서 "몇 개 있다", "없다"처럼 개수나 존재 여부를 단정하지 마세요. 대신 "검색된 내용 기준으로는 ~개 확인됩니다" 또는 "검색된 범위에서는 찾을 수 없어요"라고 표현하세요.
 - 동의어나 다른 표현(예: CPM 네트워크 = 임계 경로법)도 함께 고려해서 답변하세요.
-- 질문자가 특정 문서를 언급하더라도, 검색 결과가 다른 문서에서 나올 수 있습니다. 이 경우 실제 참고한 문서를 정확히 명시하세요."""
+- 질문자가 특정 문서를 언급하더라도, 검색 결과가 다른 문서에서 나올 수 있습니다. 이 경우에도 답변에 파일명을 직접 쓰지 말고 내용으로만 답변하세요."""
 
 
 class HistoryMessage(BaseModel):
@@ -101,7 +101,10 @@ def hybrid_search(question: str, question_vector: list, collection, top_k: int):
     combined = 0.5 * bm25_scores + 0.5 * sem_scores
     top_indices = np.argsort(combined)[::-1][:actual_k]
 
-    return [all_chunks[i] for i in top_indices], [all_metadatas[i] for i in top_indices]
+    return (
+        [all_chunks[i] for i in top_indices],
+        [all_metadatas[i] for i in top_indices],
+    )
 
 
 @router.post("/chat")
@@ -111,7 +114,10 @@ async def chat(request: ChatRequest):
     collection = get_collection()
     chunks, metadatas = hybrid_search(request.question, question_vector, collection, TOP_K)
 
-    context = "\n\n".join(chunks)
+    context = "\n\n".join(
+        f"[출처: {m.get('filename', '알 수 없음')}]\n{chunk}"
+        for chunk, m in zip(chunks, metadatas)
+    )
     sources = []
     for chunk, m in zip(chunks[:3], metadatas[:3]):
         if not m or "filename" not in m:
