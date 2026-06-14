@@ -15,26 +15,20 @@ export default function Home() {
   return (
     <div className="flex flex-1 overflow-hidden bg-white dark:bg-zinc-950">
       {/* 모바일 탭 네비게이션 */}
-      <div className="fixed bottom-0 left-0 right-0 z-10 border-t border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950 md:hidden">
-        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'chat' | 'upload')}>
-          <TabsList
-            variant="line"
-            className="h-12 w-full gap-0 rounded-none border-none bg-transparent p-0"
+      <div className="fixed bottom-0 left-0 right-0 z-10 flex border-t border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950 md:hidden">
+        {(['chat', 'upload'] as const).map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            className={`flex-1 py-3 text-xs font-medium transition-colors ${
+              activeTab === tab
+                ? 'text-zinc-900 dark:text-zinc-100'
+                : 'text-zinc-400 dark:text-zinc-500'
+            }`}
           >
-            <TabsTrigger
-              value="chat"
-              className="h-full flex-1 rounded-none text-xs after:hidden data-active:bg-transparent data-active:shadow-none dark:data-active:border-transparent dark:data-active:bg-transparent"
-            >
-              채팅
-            </TabsTrigger>
-            <TabsTrigger
-              value="upload"
-              className="h-full flex-1 rounded-none text-xs after:hidden data-active:bg-transparent data-active:shadow-none dark:data-active:border-transparent dark:data-active:bg-transparent"
-            >
-              문서
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
+            {tab === 'chat' ? '채팅' : '문서'}
+          </button>
+        ))}
       </div>
 
       {/* 사이드바 */}

@@ -11,7 +11,7 @@
 ### 사이드바 탭
 
 - 기존 사이드바 상단에 `파일 목록 | 통계` 탭 추가
-- 탭 상태는 사이드바 내부 `useState`로 관리 (page.tsx로 끌어올리지 않음)
+- 탭 상태는 shadcn `Tabs` 컴포넌트 내부 상태로 관리 (`defaultValue="files"`, page.tsx로 끌어올리지 않음)
 - 파일 목록 탭: 기존 FileUploader + FileList 그대로
 - 통계 탭: StatsPanel 컴포넌트
 
