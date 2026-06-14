@@ -7,7 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "prepare": "husky"
+    "prepare": "husky",
+    "e2e": "bash e2e/run.sh",
+    "e2e:headed": "E2E_HEADED=1 bash e2e/run.sh",
+    "e2e:setup": "bash e2e/setup.sh"
   },
   "dependencies": {
     "@base-ui/react": "^1.5.0",

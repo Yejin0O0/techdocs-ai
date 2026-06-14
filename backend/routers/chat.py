@@ -22,6 +22,7 @@ def get_groq_client() -> Groq:
 
 TOP_K = 5
 MODEL = "qwen/qwen3-32b"
+RELEVANCE_THRESHOLD = 0.7  # cosine distance (0=identical, 1=무관)
 
 SYSTEM_PROMPT = """당신은 기술 문서를 기반으로 답변하는 AI 어시스턴트입니다.
 반드시 한국어로만 답변하세요. 중국어, 일본어 등 다른 언어를 절대 사용하지 마세요.
@@ -70,15 +71,20 @@ def hybrid_search(question: str, question_vector: list, collection, top_k: int):
 
     actual_k = min(top_k, len(all_chunks))
 
-    # BM25 키워드 검색 (캐시된 인덱스 사용)
-    bm25_scores = np.array(bm25.get_scores(question.split()), dtype=float)
-
-    # 시맨틱 검색
+    # 시맨틱 관련도 사전 확인 — 가장 유사한 청크도 임계값 초과면 관련 문서 없음
     sem_results = collection.query(
         query_embeddings=[question_vector],
         n_results=actual_k,
         include=["documents", "distances"],
     )
+    distances = sem_results["distances"][0] if sem_results["distances"] else []
+    if not distances or min(distances) > RELEVANCE_THRESHOLD:
+        return [], []
+
+    # BM25 키워드 검색 (캐시된 인덱스 사용)
+    bm25_scores = np.array(bm25.get_scores(question.split()), dtype=float)
+
+    # 시맨틱 검색 (위에서 이미 조회한 결과 재사용)
     sem_scores = np.zeros(len(all_chunks))
     for doc, dist in zip(sem_results["documents"][0], sem_results["distances"][0]):
         for i, chunk in enumerate(all_chunks):
