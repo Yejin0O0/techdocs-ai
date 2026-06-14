@@ -58,7 +58,9 @@ function StatCard({ label, value }: { label: string; value: number }) {
 
 export default function StatsPanel({ documents }: StatsPanelProps) {
   const readyCount = documents.filter((d) => d.status === 'ready').length;
-  const indexingCount = documents.filter((d) => d.status === 'indexing').length;
+  const processingCount = documents.filter(
+    (d) => d.status === 'indexing' || d.status === 'uploading'
+  ).length;
 
   const typeData = Object.entries(
     documents.reduce<Record<string, number>>((acc, doc) => {
@@ -95,7 +97,7 @@ export default function StatsPanel({ documents }: StatsPanelProps) {
             <div className="grid grid-cols-3 gap-2">
               <StatCard label="전체" value={documents.length} />
               <StatCard label="준비 완료" value={readyCount} />
-              <StatCard label="처리 중" value={indexingCount} />
+              <StatCard label="처리 중" value={processingCount} />
             </div>
 
             {/* 파일 형식 분포 */}
