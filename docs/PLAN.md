@@ -91,13 +91,13 @@
 
 - [x] GitHub 레포 URL 입력 컴포넌트 (`GithubInput.tsx`)
 - [x] 코드 블록 Syntax Highlight (`shiki`)
-- [ ] 인덱싱 진행률 실시간 표시 (SSE `progress` 필드) — Day 9로 이동
+- [x] 인덱싱 진행률 실시간 표시 (SSE `progress` 필드) — Day 9로 이동
 
 ### Day 9 (화) — GitHub API 백엔드 연결 `4h`
 
-- [ ] GitHub API — README, 코드 주석 크롤링 → 벡터 저장
-- [ ] `/github` 엔드포인트 구현 및 프론트 연결
-- [ ] 인덱싱 진행률 실시간 표시 (SSE `/documents/status` `progress` 필드 확장 + 프론트 연결)
+- [x] GitHub API — .md 파일 크롤링 → 벡터 저장 (`/github` 엔드포인트)
+- [x] `/github` 엔드포인트 구현 및 프론트 연결
+- [x] 인덱싱 진행률 실시간 표시 (SSE `/documents/status` `progress` 필드 확장 + 프론트 연결)
 
 ### Day 10 (수) — Slack 연동 `3h`
 
