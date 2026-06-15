@@ -129,13 +129,8 @@ export function useDocuments() {
   }, []);
 
   const handleGithubIndex = useCallback(async (url: string) => {
-    try {
-      const repo = await indexGithubRepo(url);
-      setDocuments((prev) => [{ ...repo, status: 'indexing' }, ...prev]);
-    } catch (e) {
-      // 에러는 GithubInput에서 처리
-      throw e;
-    }
+    const repo = await indexGithubRepo(url);
+    setDocuments((prev) => [{ ...repo, status: 'indexing' }, ...prev]);
   }, []);
 
   const checkDuplicates = useCallback(
