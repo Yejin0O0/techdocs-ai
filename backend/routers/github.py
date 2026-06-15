@@ -34,7 +34,7 @@ def parse_repo(url: str) -> tuple[str, str]:
 
 
 async def fetch_md_paths(owner: str, repo: str) -> list[str]:
-    async with httpx.AsyncClient() as client:
+    async with httpx.AsyncClient(follow_redirects=True) as client:
         res = await client.get(
             f"{GITHUB_API}/repos/{owner}/{repo}/git/trees/HEAD",
             params={"recursive": "1"},

@@ -95,15 +95,19 @@ export async function streamChat(
     for (const part of parts) {
       let eventType = 'message';
       let data = '';
+      let hasData = false;
 
       for (const line of part.split('\n')) {
         if (line.startsWith('event: ')) eventType = line.slice(7);
-        else if (line.startsWith('data: ')) data = line.slice(6);
+        else if (line.startsWith('data: ')) {
+          data = hasData ? data + '\n' + line.slice(6) : line.slice(6);
+          hasData = true;
+        }
       }
 
-      if (eventType === 'message' && data) {
+      if (eventType === 'message' && hasData) {
         onChunk(data);
-      } else if (eventType === 'sources' && data) {
+      } else if (eventType === 'sources' && hasData && data) {
         try {
           onSources(JSON.parse(data));
         } catch {
