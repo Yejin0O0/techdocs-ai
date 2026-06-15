@@ -107,7 +107,7 @@ export async function streamChat(
 
       if (eventType === 'message' && hasData) {
         onChunk(data);
-      } else if (eventType === 'sources' && hasData) {
+      } else if (eventType === 'sources' && hasData && data) {
         try {
           onSources(JSON.parse(data));
         } catch {
