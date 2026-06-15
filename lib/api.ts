@@ -124,7 +124,12 @@ export async function indexGithubRepo(url: string): Promise<UploadedDocument> {
 }
 
 export function subscribeDocumentStatus(
-  onEvent: (event: { id: string; status: string; errorMessage?: string }) => void,
+  onEvent: (event: {
+    id: string;
+    status: string;
+    errorMessage?: string;
+    progress?: number;
+  }) => void,
   onError?: (message: string) => void
 ): () => void {
   const es = new EventSource(`${BASE_URL}/documents/status`);
