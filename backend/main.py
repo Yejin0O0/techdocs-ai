@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from db.chroma import get_collection
 from db.store import docs_store
-from routers import chat, docs, upload
+from routers import chat, docs, github, upload
 
 load_dotenv()
 
@@ -25,6 +25,7 @@ async def lifespan(app: FastAPI):
                 "name": metadata.get("filename", doc_id),
                 "size": metadata.get("size", 0),
                 "status": "ready",
+                "uploadedAt": metadata.get("uploadedAt"),
             }
     yield
 
@@ -41,6 +42,7 @@ app.add_middleware(
 app.include_router(upload.router)
 app.include_router(docs.router)
 app.include_router(chat.router)
+app.include_router(github.router)
 
 
 @app.get("/health")
