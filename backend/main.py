@@ -1,14 +1,16 @@
 from contextlib import asynccontextmanager
 
 from dotenv import load_dotenv
+
+load_dotenv()
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from db.chroma import get_collection
 from db.store import docs_store
 from routers import chat, docs, github, upload
-
-load_dotenv()
+from slack_bot import start_slack_bot
 
 
 @asynccontextmanager
@@ -27,7 +29,13 @@ async def lifespan(app: FastAPI):
                 "status": "ready",
                 "uploadedAt": metadata.get("uploadedAt"),
             }
+
+    slack_result = await start_slack_bot()
     yield
+    if slack_result:
+        handler, task = slack_result
+        await handler.close_async()
+        task.cancel()
 
 
 app = FastAPI(title="TechDocs AI API", lifespan=lifespan)
