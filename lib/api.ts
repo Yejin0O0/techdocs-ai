@@ -114,6 +114,15 @@ export async function streamChat(
   }
 }
 
+export async function indexGithubRepo(url: string): Promise<UploadedDocument> {
+  try {
+    const { data } = await axios.post(`${BASE_URL}/github`, { url });
+    return parseDocument(data);
+  } catch (e) {
+    extractErrorMessage(e, 'GitHub 레포 인덱싱 중 오류가 발생했어요.');
+  }
+}
+
 export function subscribeDocumentStatus(
   onEvent: (event: { id: string; status: string; errorMessage?: string }) => void,
   onError?: (message: string) => void

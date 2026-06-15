@@ -2,7 +2,13 @@
 
 import { useCallback, useEffect, useState } from 'react';
 
-import { deleteDocument, fetchDocuments, subscribeDocumentStatus, uploadDocument } from '@/lib/api';
+import {
+  deleteDocument,
+  fetchDocuments,
+  indexGithubRepo,
+  subscribeDocumentStatus,
+  uploadDocument,
+} from '@/lib/api';
 import { UploadedDocument } from '@/types';
 
 export function useDocuments() {
@@ -122,10 +128,32 @@ export function useDocuments() {
     }
   }, []);
 
+  const handleGithubIndex = useCallback(async (url: string) => {
+    const repo = await indexGithubRepo(url);
+    setDocuments((prev) => [{ ...repo, status: 'indexing' }, ...prev]);
+  }, []);
+
   const checkDuplicates = useCallback(
     (files: File[]) => files.filter((f) => documents.some((d) => d.name === f.name)),
     [documents]
   );
 
-  return { documents, fetchError, handleUpload, handleRetry, handleDelete, checkDuplicates };
+  const checkDuplicateRepo = useCallback(
+    (url: string) => {
+      const name = url.replace(/^https?:\/\/github\.com\//, '').replace(/\/$/, '');
+      return documents.some((d) => d.name === name);
+    },
+    [documents]
+  );
+
+  return {
+    documents,
+    fetchError,
+    handleUpload,
+    handleRetry,
+    handleDelete,
+    handleGithubIndex,
+    checkDuplicates,
+    checkDuplicateRepo,
+  };
 }

@@ -5,6 +5,7 @@ import ReactMarkdown from 'react-markdown';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ChatMessage, ChatSource } from '@/types';
 
+import CodeBlock from './CodeBlock';
 import SourceBadge from './SourceBadge';
 
 interface Props {
@@ -38,7 +39,23 @@ export default function MessageBubble({ message, onBadgeClick, onRetry }: Props)
           <p className="whitespace-pre-wrap">{message.content}</p>
         ) : (
           <div className="prose prose-sm dark:prose-invert max-w-none">
-            <ReactMarkdown>{message.content}</ReactMarkdown>
+            <ReactMarkdown
+              components={{
+                code({ className, children, ...rest }) {
+                  const match = /language-(\w+)/.exec(className ?? '');
+                  if (!match) {
+                    return (
+                      <code className={className} {...rest}>
+                        {children}
+                      </code>
+                    );
+                  }
+                  return <CodeBlock code={String(children).replace(/\n$/, '')} lang={match[1]} />;
+                },
+              }}
+            >
+              {message.content}
+            </ReactMarkdown>
           </div>
         )}
 
