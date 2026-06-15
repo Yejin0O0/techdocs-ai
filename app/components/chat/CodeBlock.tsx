@@ -48,8 +48,8 @@ export default function CodeBlock({ code, lang }: Props) {
                 key={j}
                 style={{
                   color: token.color,
-                  fontWeight: (token.fontStyle ?? 0) & 1 ? 'bold' : undefined,
-                  fontStyle: (token.fontStyle ?? 0) & 2 ? 'italic' : undefined,
+                  fontStyle: (token.fontStyle ?? 0) & 1 ? 'italic' : undefined,
+                  fontWeight: (token.fontStyle ?? 0) & 2 ? 'bold' : undefined,
                 }}
               >
                 {token.content}
