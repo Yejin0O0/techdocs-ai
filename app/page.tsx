@@ -5,6 +5,7 @@ import StatsPanel from '@/app/components/stats/StatsPanel';
 import FileList from '@/app/components/upload/FileList';
 import FileUploader from '@/app/components/upload/FileUploader';
 import GithubInput from '@/app/components/upload/GithubInput';
+import SlackSettings from '@/app/components/upload/SlackSettings';
 import { useDocuments } from '@/app/hooks/useDocuments';
 import { useMobileTab } from '@/app/hooks/useMobileTab';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -68,13 +69,16 @@ export default function Home() {
           </div>
           <TabsContent
             value="files"
-            className="flex flex-1 flex-col gap-4 overflow-hidden px-6 pb-16 pt-4 md:pb-6"
+            className="flex flex-1 flex-col gap-4 overflow-y-auto px-6 pb-16 pt-4 md:pb-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           >
             <FileUploader onUpload={handleUpload} checkDuplicates={checkDuplicates} />
             <div className="border-t border-zinc-200 pt-3 dark:border-zinc-800">
               <GithubInput onIndex={handleGithubIndex} checkDuplicateRepo={checkDuplicateRepo} />
             </div>
-            <div className="flex-1 overflow-y-auto">
+            <div className="border-t border-zinc-200 pt-3 dark:border-zinc-800">
+              <SlackSettings />
+            </div>
+            <div className="border-t border-zinc-200 pt-3 dark:border-zinc-800">
               <FileList documents={documents} onRetry={handleRetry} onDelete={handleDelete} />
             </div>
           </TabsContent>
