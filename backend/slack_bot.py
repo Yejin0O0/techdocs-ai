@@ -6,11 +6,11 @@ import re
 from slack_bolt.async_app import AsyncApp
 from slack_bolt.adapter.socket_mode.async_handler import AsyncSocketModeHandler
 
-logger = logging.getLogger(__name__)
-
 from db.chroma import get_collection
 from db.embeddings import embedding_model
 from routers.chat import MODEL, SYSTEM_PROMPT, TOP_K, get_groq_client, hybrid_search
+
+logger = logging.getLogger(__name__)
 
 
 def _build_app() -> AsyncApp | None:
@@ -39,7 +39,7 @@ def _answer_sync(question: str) -> str:
         f"[출처: {m.get('filename', '알 수 없음')}]\n{chunk}"
         for chunk, m in zip(chunks, metadatas)
     )
-    sources = list({m.get("filename") for m in metadatas[:3] if m.get("filename")})
+    sources = list({m.get("filename") for m in metadatas if m.get("filename")})
 
     messages = [
         {"role": "system", "content": SYSTEM_PROMPT},
@@ -52,6 +52,8 @@ def _answer_sync(question: str) -> str:
     response = get_groq_client().chat.completions.create(
         model=MODEL, messages=messages, stream=False
     )
+    if not response.choices:
+        return "답변을 생성하지 못했어요."
     answer = response.choices[0].message.content or "답변을 생성하지 못했어요."
 
     if sources:
