@@ -101,8 +101,8 @@
 
 ### Day 10 (수) — Slack 연동 `3h`
 
-- [ ] Slack App 생성 (Bolt SDK), @멘션 → RAG 답변 전송
-- [ ] Slack 연동 설정 UI (`SlackSettings.tsx`)
+- [x] Slack App 생성 (Bolt SDK), @멘션 → RAG 답변 전송
+- [x] Slack 연동 설정 UI (`SlackSettings.tsx`)
 
 ### Day 11 (목) — 문서 비교 & 필터 UI `4h`
 
