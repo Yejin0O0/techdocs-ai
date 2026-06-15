@@ -41,6 +41,9 @@ export default function MessageBubble({ message, onBadgeClick, onRetry }: Props)
           <div className="prose prose-sm dark:prose-invert max-w-none">
             <ReactMarkdown
               components={{
+                pre({ children }) {
+                  return <>{children}</>;
+                },
                 code({ className, children, ...rest }) {
                   const match = /language-(\w+)/.exec(className ?? '');
                   if (!match) {

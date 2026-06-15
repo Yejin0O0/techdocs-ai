@@ -18,10 +18,9 @@ export default function CodeBlock({ code, lang }: Props) {
   const [result, setResult] = useState<HighlightResult | null>(null);
 
   useEffect(() => {
-    const isDark = document.documentElement.classList.contains('dark');
     codeToTokens(code, {
       lang: (lang || 'text') as BundledLanguage,
-      theme: isDark ? 'one-dark-pro' : 'github-light',
+      theme: 'one-dark-pro',
     })
       .then(({ tokens, bg, fg }) => setResult({ lines: tokens, bg: bg ?? '', fg: fg ?? '' }))
       .catch(() => setResult(null));
@@ -29,7 +28,7 @@ export default function CodeBlock({ code, lang }: Props) {
 
   if (!result) {
     return (
-      <pre className="overflow-x-auto rounded-md bg-zinc-100 p-4 text-sm dark:bg-zinc-800">
+      <pre className="overflow-x-auto rounded-md bg-zinc-800 p-4 text-sm text-zinc-100">
         <code>{code}</code>
       </pre>
     );
