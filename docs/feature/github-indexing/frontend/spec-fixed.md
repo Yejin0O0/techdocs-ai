@@ -21,7 +21,7 @@
 ## 핵심 동작
 
 - URL 입력 후 인덱싱 버튼 클릭 → `POST /github` 호출
-- 인덱싱 중 FileList에 진행률 바 표시 (기존 `uploading` 진행률 바 재사용)
+- 인덱싱 중 FileList에 `인덱싱 중` 상태 표시 (진행률 바는 Day 9 — SSE `progress` 필드 확장 후 연결)
 - 완료 후 FileList에 `준비 완료` 상태로 표시
 - 오류 시 FileList에 `오류` 상태 + 에러 메시지 표시 (재시도 버튼 없음 — 삭제 후 재추가)
 - 같은 레포 URL 중복 입력 시 경고 (파일 중복 패턴과 동일)
@@ -55,8 +55,8 @@ GitHub 레포는 기존 `UploadedDocument` 타입을 그대로 사용한다.
 ## 백엔드 연결
 
 - `POST /github` — `{ url }` 전송 → `UploadedDocument` 형태로 응답 수신
-- 인덱싱 진행률은 기존 `/documents/status` SSE 확장으로 수신 (`progress` 필드 추가)
-  - 별도 SSE 연결 없음, `subscribeDocumentStatus` 재사용
+- 인덱싱 진행률 SSE 수신은 Day 9 작업 — `/documents/status`에 `progress` 필드 추가 후 프론트 연결
+  - 현재(Day 8): SSE 이벤트 수신 시 `progress: undefined` 유지
 - `DELETE /documents/:id` — 기존 삭제 API 그대로 사용
 
 `lib/api.ts`에 `indexGithubRepo(url: string): Promise<UploadedDocument>` 추가.
