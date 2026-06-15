@@ -21,7 +21,7 @@ export function useDocuments() {
       .catch((e: Error) => setFetchError(e.message));
 
     const unsubscribe = subscribeDocumentStatus(
-      ({ id, status, errorMessage }) => {
+      ({ id, status, errorMessage, progress }) => {
         setDocuments((prev) =>
           prev.map((d) => {
             if (d.id !== id) return d;
@@ -29,7 +29,7 @@ export function useDocuments() {
               ...d,
               status: status as UploadedDocument['status'],
               errorMessage,
-              progress: undefined,
+              progress: status === 'indexing' ? progress : undefined,
             };
           })
         );

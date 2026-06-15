@@ -26,6 +26,8 @@ async def docs_status():
                     docs_store[doc_id]["status"] = event["status"]
                     if "errorMessage" in event:
                         docs_store[doc_id]["errorMessage"] = event["errorMessage"]
+                    if "progress" in event:
+                        docs_store[doc_id]["progress"] = event["progress"]
                 yield {"data": json.dumps(event)}
             await asyncio.sleep(0.5)
 
