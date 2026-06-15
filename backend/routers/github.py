@@ -50,13 +50,12 @@ async def fetch_md_paths(owner: str, repo: str) -> list[str]:
         return [item["path"] for item in tree if item["path"].endswith(".md")]
 
 
-async def fetch_file_content(owner: str, repo: str, path: str) -> str:
+async def fetch_file_content(client: httpx.AsyncClient, owner: str, repo: str, path: str) -> str:
     url = f"https://raw.githubusercontent.com/{owner}/{repo}/HEAD/{path}"
-    async with httpx.AsyncClient() as client:
-        res = await client.get(url, timeout=15)
-        if res.status_code != 200:
-            return ""
-        return res.text
+    res = await client.get(url, timeout=15)
+    if res.status_code != 200:
+        return ""
+    return res.text
 
 
 async def process_github_repo(doc_id: str, owner: str, repo: str, md_paths: list[str]) -> None:
@@ -64,30 +63,31 @@ async def process_github_repo(doc_id: str, owner: str, repo: str, md_paths: list
         collection = get_collection()
         total = len(md_paths)
 
-        for i, path in enumerate(md_paths):
-            content = await fetch_file_content(owner, repo, path)
-            if not content.strip():
-                continue
+        async with httpx.AsyncClient() as client:
+            for i, path in enumerate(md_paths):
+                content = await fetch_file_content(client, owner, repo, path)
+                if not content.strip():
+                    continue
 
-            chunks = text_splitter.split_text(content)
-            if not chunks:
-                continue
+                chunks = text_splitter.split_text(content)
+                if not chunks:
+                    continue
 
-            metadatas = [
-                {"doc_id": doc_id, "filename": f"{owner}/{repo}", "source": "github", "repo": f"{owner}/{repo}", "path": path, "size": total}
-                for _ in chunks
-            ]
-            embeddings = embedding_model.encode(chunks).tolist()
-            collection.add(
-                ids=[f"{doc_id}_{path}_{j}" for j in range(len(chunks))],
-                embeddings=embeddings,
-                documents=chunks,
-                metadatas=metadatas,
-            )
+                metadatas = [
+                    {"doc_id": doc_id, "filename": f"{owner}/{repo}", "source": "github", "repo": f"{owner}/{repo}", "path": path, "size": total}
+                    for _ in chunks
+                ]
+                embeddings = embedding_model.encode(chunks).tolist()
+                collection.add(
+                    ids=[f"{doc_id}_{path}_{j}" for j in range(len(chunks))],
+                    embeddings=embeddings,
+                    documents=chunks,
+                    metadatas=metadatas,
+                )
 
-            progress = round((i + 1) / total * 100)
-            docs_store[doc_id]["progress"] = progress
-            status_events.append({"id": doc_id, "status": "indexing", "progress": progress})
+                progress = round((i + 1) / total * 100)
+                docs_store[doc_id]["progress"] = progress
+                status_events.append({"id": doc_id, "status": "indexing", "progress": progress})
 
         docs_store[doc_id]["status"] = "ready"
         docs_store[doc_id]["size"] = total
@@ -111,6 +111,12 @@ async def index_github_repo(req: GithubIndexRequest, background_tasks: Backgroun
     md_paths = await fetch_md_paths(owner, repo)
     if not md_paths:
         raise HTTPException(status_code=400, detail=".md 파일이 없는 레포예요.")
+
+    repo_name = f"{owner}/{repo}"
+    existing = next((d for d in docs_store.values() if d["name"] == repo_name), None)
+    if existing:
+        get_collection().delete(where={"doc_id": existing["id"]})
+        del docs_store[existing["id"]]
 
     doc_id = str(uuid.uuid4())
     doc = {
