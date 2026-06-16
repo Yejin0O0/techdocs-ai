@@ -19,13 +19,14 @@ Vercel(프론트엔드) + Railway(백엔드) 조합으로 외부에서 접근 �
 
 ### ADR-01: ChromaDB 데이터 지속성 — 에페머럴 허용
 
-**Context** — Railway 파일시스템은 재시작·재배포 시 초기화된다. ChromaDB가 로컬 파일 기반이라 배포 후 데이터가 사라지는 문제가 있었다.
+**Context** — HuggingFace Spaces 파일시스템은 재시작·재배포 시 초기화된다. ChromaDB가 로컬 파일 기반이라 배포 후 데이터가 사라지는 문제가 있었다.
 
 **Decision** — 에페머럴을 허용한다. 데모 전에 직접 문서를 재업로드한다.
 
 **Alternatives**
 
-- _Railway Volume_ — 영구 볼륨 마운트로 데이터 보존. 코드 변경 없이 설정만으로 해결. 단 Railway Hobby 플랜($5/월) 이상 필요.
+- _외부 볼륨 마운트_ — 영구 스토리지로 데이터 보존. 단 HuggingFace Spaces 무료 티어에서는 지원하지 않음.
+- _Chroma Cloud_ — 관리형 ChromaDB 서비스. 무료 티어 있음. `PersistentClient` → `HttpClient` 코드 변경 필요.
 - _Chroma Cloud_ — 관리형 ChromaDB 서비스. 무료 티어 있음. `PersistentClient` → `HttpClient` 코드 변경 필요.
 
 **Consequences**
