@@ -1,3 +1,4 @@
+import os
 from contextlib import asynccontextmanager
 
 from dotenv import load_dotenv
@@ -40,9 +41,13 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="TechDocs AI API", lifespan=lifespan)
 
+_allowed_origins = ["http://localhost:3000"]
+if os.getenv("ALLOWED_ORIGIN"):
+    _allowed_origins.append(os.getenv("ALLOWED_ORIGIN"))
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=_allowed_origins,
     allow_methods=["*"],
     allow_headers=["*"],
 )
