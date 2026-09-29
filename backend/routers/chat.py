@@ -21,7 +21,7 @@ def get_groq_client() -> Groq:
     return Groq(api_key=api_key)
 
 TOP_K = 5
-MODEL = "qwen/qwen3-32b"
+MODEL = "qwen/qwen3.8-27b"
 RELEVANCE_THRESHOLD = 0.7  # cosine distance (0=identical, 1=무관)
 
 SYSTEM_PROMPT = """당신은 기술 문서를 기반으로 답변하는 AI 어시스턴트입니다.
