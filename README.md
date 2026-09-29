@@ -20,7 +20,7 @@
 - **출처 표시**: 답변마다 출처 뱃지, 클릭 시 원문에서 질문 키워드를 하이라이트한 사이드패널
 - **관련 문서 없음 처리**: 질문과 관련된 문서가 없으면 출처를 붙이지 않고 "관련 내용 없음"으로 응답
 - **Slack 연동**: `@techdocs` 멘션으로 채널에서 바로 질문 (Socket Mode)
-- **GitHub 연동**: 레포 URL 입력 → README, 코드 주석 크롤링 → 인덱싱 <!-- TODO: 배포 환경 반영 여부 확인 후 표기 -->
+- **GitHub 연동**: 레포 URL 입력 → README, 코드 주석 크롤링 → 인덱싱
 
 ---
 
@@ -36,7 +36,7 @@
 - FastAPI, sse-starlette
 - LangChain (텍스트 분할), pdfplumber
 - ChromaDB, sentence-transformers (`paraphrase-multilingual-MiniLM-L12-v2`), rank-bm25
-- Groq API (`qwen/qwen3-32b`)
+- Groq API (`qwen/qwen3.8-27b`)
 - slack-bolt (Socket Mode)
 
 ### 배포 및 개발 도구
