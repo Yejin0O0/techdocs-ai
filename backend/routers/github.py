@@ -24,6 +24,7 @@ GITHUB_API = "https://api.github.com"
 
 class GithubIndexRequest(BaseModel):
     url: str
+    path_prefixes: list[str] | None = None
 
 
 def parse_repo(url: str) -> tuple[str, str]:
@@ -109,6 +110,8 @@ async def index_github_repo(req: GithubIndexRequest, background_tasks: Backgroun
         raise HTTPException(status_code=400, detail=str(e))
 
     md_paths = await fetch_md_paths(owner, repo)
+    if req.path_prefixes:
+        md_paths = [p for p in md_paths if any(p.startswith(prefix) for prefix in req.path_prefixes)]
     if not md_paths:
         raise HTTPException(status_code=400, detail=".md 파일이 없는 레포예요.")
 
