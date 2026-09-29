@@ -112,7 +112,7 @@
 ### Day 12 (금) — 배포 `3h`
 
 - [ ] Vercel 프론트엔드 배포
-- [ ] Railway 백엔드 배포
+- [ ] Hugging Face Spaces 백엔드 배포 (Railway는 유료 플랜 필요로 변경, feature/deployment/prd.md ADR-02)
 - [ ] 환경변수 설정, 도메인 연결 확인
 
 ### Day 13 (토) — 포트폴리오 정리 `4h`

@@ -36,7 +36,7 @@
 
 ### 2. AI 채팅
 
-- 질문 입력 → 관련 청크 검색 → OpenAI로 답변 생성
+- 질문 입력 → 하이브리드 검색(BM25 + 시맨틱)으로 관련 청크 검색 → Groq(qwen3.8-27b)로 답변 생성
 - SSE(Server-Sent Events) 스트리밍으로 실시간 타이핑 효과
 - 마크다운 + 코드 블록 렌더링, 대화 기록 유지
 
@@ -69,9 +69,10 @@
 | 선택                   | 이유                                                                                                       |
 | ---------------------- | ---------------------------------------------------------------------------------------------------------- |
 | Next.js 14 App Router  | 서버 컴포넌트로 초기 로딩 최적화, SSE 처리 용이                                                            |
-| FastAPI                | Python 생태계(LangChain, OpenAI SDK) 활용, 비동기 스트리밍 지원                                            |
+| FastAPI                | Python 생태계(LangChain, sentence-transformers, ChromaDB) 활용, 비동기 스트리밍 지원                       |
 | ChromaDB               | 로컬 실행 가능, 설정 없이 빠른 프로토타이핑                                                                |
-| Vercel + Railway       | 프론트/백엔드 분리 배포, 각 플랫폼 무료 티어 활용                                                          |
+| Vercel + HF Spaces     | 프론트/백엔드 분리 배포, 신용카드 없이 무료 운영 가능 (상세: feature/deployment/prd.md ADR-02)             |
+| Groq                   | 무료 티어, 빠른 토큰 생성 속도 (상세: feature/document-upload/backend/prd.md)                              |
 | JIRA + Claude Code MCP | 개발 태스크를 JIRA 이슈로 관리하고 Claude Code에서 MCP로 직접 조회·업데이트 — AI 보조 개발 워크플로우 구성 |
 
 ---
@@ -100,7 +101,7 @@
 
 - [ ] 문서 업로드 후 30초 이내 질문 가능
 - [ ] 모든 답변에 출처 뱃지 포함
-- [ ] GitHub 레포 URL 하나로 자동 인덱싱 완료
+- [x] GitHub 레포 URL 하나로 자동 인덱싱 완료
 - [ ] Slack @멘션으로 질문 → 출처 포함 답변 수신
-- [ ] Vercel 배포 완료, 외부 접속 및 데모 가능
+- [ ] Vercel(프론트) + Hugging Face Spaces(백엔드) 배포 완료, 외부 접속 및 데모 가능
 - [ ] JIRA 이슈로 전체 개발 이력 추적 가능
