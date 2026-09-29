@@ -68,7 +68,7 @@
 
 | 선택                   | 이유                                                                                                       |
 | ---------------------- | ---------------------------------------------------------------------------------------------------------- |
-| Next.js 14 App Router  | 서버 컴포넌트로 초기 로딩 최적화, SSE 처리 용이                                                            |
+| Next.js 16 App Router  | 서버 컴포넌트로 초기 로딩 최적화, SSE 처리 용이                                                            |
 | FastAPI                | Python 생태계(LangChain, sentence-transformers, ChromaDB) 활용, 비동기 스트리밍 지원                       |
 | ChromaDB               | 로컬 실행 가능, 설정 없이 빠른 프로토타이핑                                                                |
 | Vercel + HF Spaces     | 프론트/백엔드 분리 배포, 신용카드 없이 무료 운영 가능 (상세: feature/deployment/prd.md ADR-02)             |
