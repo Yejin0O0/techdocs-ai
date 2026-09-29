@@ -34,12 +34,12 @@ Socket Mode는 반대로 서버가 Slack 서버에 먼저 WebSocket 연결을 �
 
 **Alternatives**
 
-- _Webhook_ — 공개 URL이 고정된 프로덕션 환경이라면 Webhook이 더 단순하다. 하지만 이 프로젝트는 로컬 개발과 Railway 배포를 오가며 반복 테스트하는 포트폴리오 프로젝트다. URL 변경마다 Slack App 설정을 갱신해야 하는 Webhook 방식은 개발 사이클을 느리게 만든다.
+- _Webhook_ — 공개 URL이 고정된 프로덕션 환경이라면 Webhook이 더 단순하다. 하지만 이 프로젝트는 로컬 개발과 클라우드 배포(Hugging Face Spaces)를 오가며 반복 테스트하는 포트폴리오 프로젝트다. URL 변경마다 Slack App 설정을 갱신해야 하는 Webhook 방식은 개발 사이클을 느리게 만든다.
 
 **Consequences**
 
 - (+) 로컬 개발 환경에서 ngrok 없이 바로 테스트 가능
-- (+) Railway 배포 URL이 바뀌어도 Slack App 설정 변경 불필요
+- (+) 배포 URL이 바뀌어도 Slack App 설정 변경 불필요
 - (+) 서버가 연결을 시작하므로 방화벽/인바운드 포트 개방 불필요
 - (-) `SLACK_APP_TOKEN` (xapp-) 추가 발급 필요 — Webhook 대비 토큰이 하나 더 많음
 - (-) Socket Mode는 Slack 엔터프라이즈 환경에서 비활성화될 수 있음 (포트폴리오 규모에서는 무관)
