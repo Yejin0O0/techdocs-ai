@@ -146,4 +146,5 @@ npm run e2e:headed  # 브라우저 직접 확인
 - [PRD](docs/PRD.md): 문제 정의, 기능 요구사항
 - [PLAN](docs/PLAN.md): 개발 계획 및 아키텍처
 - [Contributing](docs/CONTRIBUTING.md): 커밋, 브랜치 컨벤션
+- [Troubleshooting](docs/TROUBLESHOOTING.md): 배포 환경 점검 및 문제 해결 기록
 - [feature/](docs/feature): 기능별 spec 및 ADR
